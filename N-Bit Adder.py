@@ -36,7 +36,6 @@ for i in range(n_bits):
 carry_out = c.gate(op.id_, [g_or[-1]], is_output=True)
 results = [c.gate(op.id_, [g_xor[i-1]], is_output=True) for i in range(n_bits)]
 
-
 # Define the inputs_values with n_bits
 input_values = [0] * (2 * n_bits + 1)  # Initialize with zeros
 input_values[0] = 1  # Set the carry input (C) to 1 if needed
@@ -46,9 +45,6 @@ output_values = c.evaluate(input_values)
 
 # Print the output values
 print(output_values)
-
-
-    [0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 #Output in Bristol Fashion
 circuit(c).emit().split('\n')
