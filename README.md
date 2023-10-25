@@ -4,10 +4,10 @@ sudo apt install python3
 
 sudo apt install python3-pip 
 
-pip install jupyterlab
+python3 -m pip install jupyterlab
 
-pip install circuit
+python3 -m pip install circuit
 
-pip install bfcl
+python3 -m pip install bfcl
 
 jupyter lab
