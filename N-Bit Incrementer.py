@@ -5,7 +5,7 @@ from itertools import product #For Evaluation
 import circuit as circuit_
 c = circuit_.circuit()  
 
-n_bits = 4
+n_bits = 16
 
 def n_bit_incrementer(n_bits):
     c = circuit_.circuit()
