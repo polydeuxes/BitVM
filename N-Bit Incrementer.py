@@ -1,24 +1,23 @@
 from circuit import op
 from bfcl import circuit, gate, operation
+from itertools import product #For Evaluation
 
 import circuit as circuit_
 c = circuit_.circuit()  
 
-n_bits = 8
+n_bits = 4
 
 def n_bit_incrementer(n_bits):
     c = circuit_.circuit()
     
-    # Create a constant gate with output set to 0
-    SET_ZERO = c.gate(op.id_, is_input=False)
-
     # Inputs for the incrementer
     inputs = [c.gate(op.id_, is_input=True) for _ in range(n_bits)]
 
     g_xor = []
     g_and = []
     
-    SET_ONE = c.gate(op.not_, [SET_ZERO])  # This outputs a constant 1
+    SET_ZERO = c.gate(op.xor_, [inputs[0], inputs[0]]) # Constant 0
+    SET_ONE = c.gate(op.not_, [SET_ZERO])  # Constant 1
 
     for i in range(n_bits):
         # Adjust the index to access the inputs in descending order
@@ -39,6 +38,26 @@ def n_bit_incrementer(n_bits):
     
     return c
 
-# To get the Bristol Fashion output
+## Evaluation
+
+c = n_bit_incrementer(n_bits)
+
+def evaluate_incrementer(circuit, input_bits):
+    """
+    Evaluate the n-bit incrementer circuit with the given input bits.
+    :param circuit: The incrementer circuit.
+    :param input_bits: The input bits for the incrementer.
+    :return: The incremented output.
+    """
+    return circuit.evaluate(input_bits)
+
+# Generate the full matrix for n_bits
+matrix = list(product(range(2), repeat=n_bits))
+
+for i in matrix:
+    print(i, "->", evaluate_incrementer(c, list(i)))
+
+## Bristol Fashion Export
+
 c = n_bit_incrementer(n_bits)
 print('\n'.join(circuit(c).emit().split('\n')))
