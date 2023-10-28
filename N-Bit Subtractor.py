@@ -7,7 +7,7 @@ import circuit as circuit_
 c = circuit_.circuit()
 
 # Bit width
-n_bits = 4
+n_bits = 16
 
 # Inputs
 inputs = [c.gate(op.id_, is_input=True) for _ in range(2 * n_bits)]
