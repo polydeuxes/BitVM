@@ -135,6 +135,8 @@ Final_Output = [c.gate(op.id_, [VirtualSelector3_Output[i]], is_output=True) for
 print("\n".join(circuit(c).emit().split('\n')))
 
 #Evaluate
+from itertools import product
+
 def evaluate_arithmetic_unit(op0_val, op1_val, X, Y):
     input_values = [op0_val, op1_val] + X + Y
     outputs = c.evaluate(input_values)
