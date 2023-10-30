@@ -59,5 +59,5 @@ def test_circuit(n_bits, c):
 
 test_circuit(n_bits, c)
 
-#Output in Bristol Fashion
-circuit(c).emit().split('\n')
+#Bristol Fashion
+print("\n".join(circuit(c).emit().split('\n')))
