@@ -46,7 +46,7 @@ for i in range(n_bits-1, -1, -1):
     VirtualAdder_OR.append(overall_carry_out)
 
 # Reverse the order for XOR to get MSB to LSB ordering
-VirtualAdder_XOR.reverse()
+VirtualAdder_XOR = VirtualAdder_XOR[::-1]
 
 # Virtual Subtractor
 borrow_bit = ONE  # Initialize with '1' for the 2's complement operation
