@@ -1,40 +1,63 @@
 from circuit import op
 from bfcl import circuit, gate, operation
 
-# Implementation of the Full Adder
 import circuit as circuit_
+
 c = circuit_.circuit()
 
-# Change this to set the bit width
-n_bits = 16
+n_bits = 4
+inputs = [c.gate(op.id_) for _ in range(2 * n_bits)]
 
-# Create lists to hold the gates
-g_and = []
-g_xor = []
-g_or = []
+# Creating a zero signal
+ZERO = c.gate(op.xor_, [inputs[-1], inputs[-1]])
 
-inputs = [c.gate(op.id_, is_input=True) for _ in range(2 * n_bits + 1)]
+sums = []  # To hold sum outputs
 
-for i in range(n_bits):
+carry = ZERO
+for i in range(n_bits-1, -1, -1):  # Start from LSB, so reverse the loop order
     a = inputs[i]
     b = inputs[i + n_bits]
-    c_in = inputs[2 * n_bits]
+    
+    # Half Adder Step 1
+    sum_temp = c.gate(op.xor_, [a, b])
+    carry_temp = c.gate(op.and_, [a, b])
 
-    xor_gate = c.gate(op.xor_, [a, b])
-    and_gate1 = c.gate(op.and_, [a, b])
-    and_gate2 = c.gate(op.and_, [xor_gate, c_in])
-    xor_gate2 = c.gate(op.xor_, [xor_gate, c_in])
-    or_gate = c.gate(op.or_, [and_gate1, and_gate2])
+    # Half Adder Step 2
+    sum_final = c.gate(op.xor_, [sum_temp, carry])
+    carry_from_sum_temp = c.gate(op.and_, [sum_temp, carry])
 
-    g_xor.append(xor_gate)
-    g_and.extend([and_gate1, and_gate2])
-    g_xor.append(xor_gate2)
-    g_or.append(or_gate)
+    # OR gate to get final carry for next iteration
+    carry = c.gate(op.or_, [carry_temp, carry_from_sum_temp])
+    
+    sums.append(sum_final)
 
-# The gates lists now hold the gates for the n-bit adder
+# The final carry out
+carry_out_final = c.gate(op.id_, [carry], is_output=True)
 
-carry_out = c.gate(op.id_, [g_or[-1]], is_output=True)
-results = [c.gate(op.id_, [g_xor[i-1]], is_output=True) for i in range(n_bits)]
+# Making the sum bits outputs in the correct order
+sum_outputs = [c.gate(op.id_, [bit], is_output=True) for bit in reversed(sums)]
+
+#Evaluate
+def test_circuit(n_bits, c):
+    print(f"Testing for {n_bits} bits...\n")
+    header_format = f"{'A'.rjust(n_bits)} {'B'.rjust(n_bits)} | {'Result'.rjust(n_bits)} {'Carry Out'}"
+    print(header_format)
+    print('-' * (len(header_format) + 1))
+
+    for i in range(2**n_bits):
+        for j in range(2**n_bits):
+            a_str = format(i, f'0{n_bits}b')
+            b_str = format(j, f'0{n_bits}b')
+            inputs_vals = list(map(int, a_str)) + list(map(int, b_str))
+            outputs = c.evaluate(inputs_vals)
+            
+            # Assuming the first output bit is the carry out
+            carry_out = str(outputs[0])
+            result = ''.join(map(str, outputs[1:]))
+            
+            print(f"{a_str} {b_str} | {result} {carry_out}")
+
+test_circuit(n_bits, c)
 
 #Output in Bristol Fashion
 circuit(c).emit().split('\n')
